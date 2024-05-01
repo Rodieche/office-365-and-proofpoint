@@ -6,6 +6,21 @@ const mailboxes = excel.excelFunction('Exchange.csv');
 const users = excel.excelFunction('Users.csv');
 const proofpoint = excel.excelFunction('Proofpoint.xlsx');
 
+if(!mailboxes){
+  console.log('Exchange.csv file not found'):
+  return;
+}
+
+if(!users){
+  console.log('Users.csv file not found'):
+  return;
+}
+
+if(!proofpoint){
+  console.log('Proofpoint.xlsx file not found'):
+  return;
+}
+
 let company = null;
 let band = 0;
 
