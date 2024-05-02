@@ -1,5 +1,9 @@
 const path = require('path');
 const excel = require('./excel');
+const consoleEmojis = require('console-emojis');
+const colors = require('colors');
+
+
 const validations = require('./validations');
 
 const mailboxes = excel.excelFunction('Exchange.csv');
@@ -7,19 +11,27 @@ const users = excel.excelFunction('Users.csv');
 const proofpoint = excel.excelFunction('Proofpoint.xlsx');
 
 if(!mailboxes){
-  console.log('Exchange.csv file not found');
+  console.x('Exchange.csv file not found');
   return;
+}else{
+  console.ok('Exchange.csv file found')
 }
 
 if(!users){
-  console.log('Users.csv file not found');
+  console.x('Users.csv file not found');
   return;
+}else{
+  console.ok('Users.csv file found')
 }
 
 if(!proofpoint){
-  console.log('Proofpoint.xlsx file not found');
+  console.x('Proofpoint.xlsx file not found');
   return;
+}else{
+  console.ok('Proofpoint.xlsx file found')
 }
+
+console.log('Analyzing data ...')
 
 let company = null;
 let band = 0;
@@ -27,6 +39,7 @@ let band = 0;
 let proofpoint_invalid_list = [];
 
 const mailboxes_check = mailboxes.map(user => {
+  console.question('Analyzing', user['Email address'].toLowerCase().green, 'information...' );
   const licenses = users.filter(u => u['User principal name'].toLowerCase() === user['Email address'].toLowerCase())[0]?.['Licenses'];
   let proofpoint_valid = validations.filterObjectsBySubstring(proofpoint, 'Email', user['Email address'] )[0]?.Role || undefined;
 
@@ -62,6 +75,7 @@ proofpoint.forEach(function(up){
 });
 
 const proofpoint_invalids = proofpoint_invalid_list.map(up => {
+  console.question('Analyzing', up['Email'].toLowerCase().gray, 'information...' );
     return {
         'Company': company,
         'Display Name': 'N/A',
@@ -74,6 +88,7 @@ const proofpoint_invalids = proofpoint_invalid_list.map(up => {
 })
 
 let data_output = [...mailboxes_check, ...proofpoint_invalids];
-//data_output = validations.validateUserinProofpoint(data_output);
 
 excel.createExcelSheet(company, data_output);
+
+console.ok_hand('Process finished'.yellow)
